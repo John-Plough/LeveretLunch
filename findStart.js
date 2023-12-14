@@ -61,21 +61,21 @@ function findStart(garden) {
 
   //odd rows & odd cols (default)
   let mostCarrots = garden[rowA][colA];
-  let indices = [rowA, colA];
+  let indices = [[rowA], [colA]];
 
   //even rows & even cols
   if (evenRows && evenCols) {
     if (garden[rowB][colB] > mostCarrots) {
       mostCarrots = garden[rowB][colB];
-      indices = [rowB, colB];
+      indices = [[rowB], [colB]];
     }
     if (garden[rowB][colA] > mostCarrots) {
       mostCarrots = garden[rowB][colA];
-      indices = [rowB, colA];
+      indices = [[rowB], [colA]];
     }
     if (garden[rowA][colB] > mostCarrots) {
       mostCarrots = garden[rowA][colB];
-      indices = [rowA, colB];
+      indices = [[rowA], [colB]];
     }
   }
 
@@ -83,7 +83,7 @@ function findStart(garden) {
   else if (evenRows) {
     if (garden[rowB][colA] > mostCarrots) {
       mostCarrots = garden[rowB][colA];
-      indices = [rowB, colA];
+      indices = [[rowB], [colA]];
     }
   }
 
@@ -91,16 +91,10 @@ function findStart(garden) {
   else if (evenCols) {
     if (garden[rowA][colB] > mostCarrots) {
       mostCarrots = garden[rowA][colB];
-      indices = [rowA, colB];
+      indices = [[rowA], [colB]];
     }
   }
 
-  console.log(`Most carrots: ${mostCarrots}`);
-  console.log(`Starting index: ${indices}`);
-
   let cell = { [mostCarrots]: [indices] };
-
-  return cell; //this will be our starting position
+  return cell; //this will be our starting position - ex. {4: [[1], [3]]}
 }
-
-// ex. {4: [1,3]}
