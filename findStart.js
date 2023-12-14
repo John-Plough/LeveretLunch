@@ -102,3 +102,5 @@ function findStart(garden) {
 
   return cell; //this will be our starting position
 }
+
+// ex. {4: [1,3]}

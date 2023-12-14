@@ -5,7 +5,7 @@
 
 /** CREATE HELPER FUNCTIONS:
 
-START - func findStart
+FIND START - func findStart
 determine start pt
 
 EAT - func eat
@@ -21,7 +21,9 @@ sleep
 
 return total (# of carrots) */
 
-function lunchCount(garden) {}
+function lunchCount(garden) {
+  let carrotCount = 0;
+}
 
 [
   [1, 1, 1],
