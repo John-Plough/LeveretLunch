@@ -97,5 +97,8 @@ function findStart(garden) {
 
   console.log(`Most carrots: ${mostCarrots}`);
   console.log(`Starting index: ${indices}`);
-  return indices; //this will be our starting position
+
+  let cell = { [mostCarrots]: [indices] };
+
+  return cell; //this will be our starting position
 }
