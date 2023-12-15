@@ -1,16 +1,3 @@
-/** CREATE findStart FUNC
-func determines indices of starting position
-  make startArr = []
-
-  if rows are odd, add middle row to startArr
-  if rows are even, add both middle rows to startArr
-  if cols are odd, add middle col to startArr
-  if cols are even, add both middle cols to startArr
-  
-  compare startArr positions, and choose the one with most carrots
-  return indices
- */
-
 function findStart(garden) {
   //func to calculate starting indices
   const startArr = [];

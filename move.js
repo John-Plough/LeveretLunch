@@ -101,3 +101,11 @@ function move(garden, cell) {
 
   return cell;
 }
+
+/**
+ * if no moves available,
+ *  noCarrots = true
+ * if noCarrots, end loop
+ * else, run eat/move
+ *
+ */
