@@ -20,14 +20,14 @@ if no carrots in W,N,E or S - sleep (exit 'move & eat' loop)
 
 Then...
 LUNCH - func lunch (contains all three helper functions)
-run findStart()
-run eat() - even if cell contains 0 carrots
+  run findStart()
+  run eat() - even if cell contains 0 carrots
 
-run move()
-  if no carrots are available, exit eat/run loop
-  otherwise, run eat() followed by move()
+  run move()
+    if no carrots are available, stop eat/run loop
+    otherwise, run eat() followed by move()
 
-return total carrots (once no moves remain)
+  return total carrots (once no moves remain)
 */
 
 let carrotCount = 0;
@@ -39,13 +39,9 @@ function lunchCount(garden) {
   curCell = findStart(garden); //start cell
 
   while (moreCarrots) {
-    //run until 'break' (in move)
-    cellAfterEating = eat(curCell);
-    curCell = move(garden, cellAfterEating);
-    // if (moreCarrots === false) {
-    //   break;
-    // }
-    // curCell = eatAndMove(curCell); //run eat, then move
+    //run eat and move functions until moreCarrots is false (*see move func)
+    cellAfterEating = eat(curCell); //eat func
+    curCell = move(garden, cellAfterEating); //move func
   }
 
   console.log(
@@ -54,12 +50,18 @@ function lunchCount(garden) {
   return carrotCount;
 }
 
-// function eatAndMove(cell) {
-//   let cellAfterEating = eat(cell);
-//   let nextCell = move(cellAfterEating);
-//   return nextCell;
-// }
+/** CREATE findStart FUNC
+func determines starting cell
+  make startArr = []
 
+  if rows are odd, add middle row to startArr
+  if rows are even, add both middle rows to startArr
+  if cols are odd, add middle col to startArr
+  if cols are even, add both middle cols to startArr
+  
+  compare startArr positions, and choose the one with most carrots
+  return starting cell - ex. { carrots: [row, col] }
+ */
 function findStart(garden) {
   //func to calculate starting indices
   const startArr = [];
@@ -157,9 +159,24 @@ function findStart(garden) {
   //   } - that's 'garden[${row}][${col}]' for all you computer nerds out there. Time to eat!`
   // );
 
-  return cell; //this will be our starting position
+  return cell; //this will be our starting cell
 }
 
+/**
+EAT - func eat
+  params: current cell
+  add carrots in cell to total carrot count
+  update carrots in cell to 0
+ */
+
+/**
+Each cell is represented by an object:
+  The key is the number of carrots currently in that cell
+  The value is an array with two elements: the row index, the col index
+
+  cell = { carrots: [row, col] }
+  ex.    {4: [1, 3]}
+ */
 function eat(cell) {
   let cellCarrots = Object.keys(cell)[0]; //carrots in cell
   let indices = cell[cellCarrots]; //indices of cell - ex. [1, 3]
@@ -170,11 +187,8 @@ function eat(cell) {
   carrotCount += Number(cellCarrots); //add (numerical) carrots to total
   cell["0"] = indices;
   garden[indices[0]][indices[1]] = 0;
-  // cell["0"] = indices; //update cell carrots to 0
-  // delete cell[cellCarrots]; //delete orig key/val pair
-
-  // console.log(`    --FUNC--`);
   cellCarrots = Number(Object.keys(cell)[0]);
+  // console.log(`    --FUNC--`);
   // console.log(`cellCarrots, after: ${cellCarrots}`);
   // console.log(`carrotCount, after: ${carrotCount}`);
   // console.log(cell);
@@ -184,13 +198,23 @@ function eat(cell) {
   return cell;
 }
 
+/**
+MOVE - func move
+
+check all directions
+  compare number of carrots at each of those cells
+    if tied for highest
+      choose in WNES order
+    if 0 carrots in W,N,E and S, change variable 'moreCarrots' to false
+
+Each cell is represented by an object:
+  The key is the number of carrots currently in that cell
+  The value is an array with two elements: the row index, the col index
+
+  cell = { carrots: [row, col] }
+  ex.    {4: [1, 3]}
+ */
 function move(garden, cellA) {
-  //cell =    { carrots: [row, col] }
-  // let carrots = Object.keys(cell)[0]; //carrots in cell   0
-  // let location = cell[carrots]; //indices of cell  ex. [1], [3]
-
-  // console.log(cellA); //{0: [1,3]}
-
   let arrOfIndices = Object.values(cellA); //[[1,3]]
   let row = arrOfIndices[0][0];
   let col = arrOfIndices[0][1];
@@ -202,36 +226,36 @@ function move(garden, cellA) {
 
   let west;
   if (col > 0) {
-    west = garden[row][col - 1]; //0 carrots
+    west = garden[row][col - 1];
   } else {
     west = 0;
   }
 
   let north;
   if (row > 0) {
-    north = garden[row - 1][col]; //4 carrots
+    north = garden[row - 1][col];
   } else {
     north = 0;
   }
 
   let east;
   if (col < garden[0].length - 1) {
-    east = garden[row][col + 1]; //4 carrots
+    east = garden[row][col + 1];
   } else {
     east = 0;
   }
 
   let south;
   if (row < garden.length - 1) {
-    south = garden[row + 1][col]; //4 carrots
+    south = garden[row + 1][col];
   } else {
     south = 0;
   }
 
-  bearings.push(west, north, east, south);
+  bearings.push(west, north, east, south); //array of choices for move
   // console.log(`carrots at each bearing: ${bearings}`);
-  let max = bearings[0];
-  let index = 0;
+  let max = bearings[0]; //determine most carrots,
+  let index = 0; //and associated indices
 
   for (let i = 1; i < bearings.length; i++) {
     if (bearings[i] > max) {
@@ -242,7 +266,7 @@ function move(garden, cellA) {
 
   // console.log(`Max: ${max}`);
   if (max === 0) {
-    moreCarrots = false;
+    moreCarrots = false; //if the best move is towards 0 carrots, we know we're done
   }
 
   // console.log(`More carrots? ${moreCarrots}`);
@@ -250,7 +274,9 @@ function move(garden, cellA) {
   // console.log(`max: ${max}`);
   // console.log(`index: ${index}`);
 
-  switch (index) {
+  switch (
+    index //calculate next cell based on which direction has most carrots
+  ) {
     case 0: //west
       curCell = { [garden[row][col - 1]]: [row, col - 1] };
       break;
@@ -264,14 +290,6 @@ function move(garden, cellA) {
       curCell = { [garden[row + 1][col]]: [row + 1, col] };
       break;
   }
-
-  // if (Number(Object.keys(curCell)[0]) === 0) {
-  //   moreCarrots = false;
-  // }
-
-  // if (moreCarrots === false) {
-  //   break;
-  // }
 
   // console.log(`Baby Leveret is moving to ${curCell}`);
   // console.log(`   The "move" func has been run.`);
