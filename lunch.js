@@ -1,9 +1,9 @@
-/** lunchCount: return # of carrots eaten
- *input - garden (matrix of carrot counts)
- *output - # of carrots
- */
+/** 
+function lunchCount
+input - garden (matrix of carrot counts)
+output - total # of carrots eaten
 
-/** CREATE HELPER FUNCTIONS:
+CREATE 3 HELPER FUNCTIONS:
 
 FIND START - func findStart
 determine start pt
@@ -15,33 +15,50 @@ and reset that cell to 0 carrots
 MOVE - func move
 check all directions
 compare vals
-if tied for highest, choose in WNES order
-if no carrots in W,N,E or S
-sleep
+if tied for highest - choose in WNES order
+if no carrots in W,N,E or S - sleep (exit 'move & eat' loop)
 
-return total (# of carrots) */
+Then...
+LUNCH - func lunch (contains all three helper functions)
+run findStart()
+run eat() - even if cell contains 0 carrots
+
+run move()
+  if no carrots are available, exit eat/run loop
+  otherwise, run eat() followed by move()
+
+return total carrots (once no moves remain)
+*/
 
 let carrotCount = 0;
+let moreCarrots = true;
+let curCell;
+let cellAfterEating;
 
 function lunchCount(garden) {
-  let cell = findStart(garden);
+  curCell = findStart(garden); //start cell
 
-  cellAfterEating = eat(cell);
+  while (moreCarrots) {
+    //run until 'break' (in move)
+    cellAfterEating = eat(curCell);
+    curCell = move(garden, cellAfterEating);
+    // if (moreCarrots === false) {
+    //   break;
+    // }
+    // curCell = eatAndMove(curCell); //run eat, then move
+  }
 
-  nextCell = move(garden, cellAfterEating);
-  cellAfterEating = eat(nextCell);
-
-  nextCell = move(garden, cellAfterEating);
-  cellAfterEating = eat(nextCell);
-
-  nextCell = move(garden, cellAfterEating);
-  cellAfterEating = eat(nextCell);
-
-  nextCell = move(garden, cellAfterEating);
-  cellAfterEating = eat(nextCell);
-
+  console.log(
+    `Baby Leveret ate ${carrotCount} carrots. Time to take a...zzz...`
+  );
   return carrotCount;
 }
+
+// function eatAndMove(cell) {
+//   let cellAfterEating = eat(cell);
+//   let nextCell = move(cellAfterEating);
+//   return nextCell;
+// }
 
 function findStart(garden) {
   //func to calculate starting indices
@@ -133,12 +150,12 @@ function findStart(garden) {
   let cell = { [garden[row][col]]: [row, col] };
   //  cell = { carrots: [row, col] }
 
-  console.log(`   The "findStart" func has been run.`);
-  console.log(
-    `Baby Leveret will start at row ${row + 1}, column ${
-      col + 1
-    }. Time to start eating!`
-  );
+  // console.log(`   The "findStart" func has been run.`);
+  // console.log(
+  //   `Baby Leveret will start at row ${row + 1}, column ${
+  //     col + 1
+  //   } - that's 'garden[${row}][${col}]' for all you computer nerds out there. Time to eat!`
+  // );
 
   return cell; //this will be our starting position
 }
@@ -147,31 +164,34 @@ function eat(cell) {
   let cellCarrots = Object.keys(cell)[0]; //carrots in cell
   let indices = cell[cellCarrots]; //indices of cell - ex. [1, 3]
   // console.log(`cellCarrots, before: ${cellCarrots}`);
+  // console.log(`carrotCount, before: ${carrotCount}`);
   // console.log(`cell, before: ${cell}`);
 
   carrotCount += Number(cellCarrots); //add (numerical) carrots to total
+  cell["0"] = indices;
   garden[indices[0]][indices[1]] = 0;
   // cell["0"] = indices; //update cell carrots to 0
   // delete cell[cellCarrots]; //delete orig key/val pair
 
   // console.log(`    --FUNC--`);
-  cellCarrots = Object.keys(cell)[0];
+  cellCarrots = Number(Object.keys(cell)[0]);
   // console.log(`cellCarrots, after: ${cellCarrots}`);
-  // console.log(`cell, after: ${cell}`);
-  console.log(
-    `   The "eat" func has been run. ${carrotCount} carrots have been eaten.`
-  );
+  // console.log(`carrotCount, after: ${carrotCount}`);
+  // console.log(cell);
+  // console.log(
+  //   `   The "eat" func has been run. ${carrotCount} carrots have been eaten.`
+  // );
   return cell;
 }
 
-function move(garden, cell) {
+function move(garden, cellA) {
   //cell =    { carrots: [row, col] }
   // let carrots = Object.keys(cell)[0]; //carrots in cell   0
   // let location = cell[carrots]; //indices of cell  ex. [1], [3]
 
-  // console.log(cell);
+  // console.log(cellA); //{0: [1,3]}
 
-  let arrOfIndices = Object.values(cell); //[[1,3]]
+  let arrOfIndices = Object.values(cellA); //[[1,3]]
   let row = arrOfIndices[0][0];
   let col = arrOfIndices[0][1];
 
@@ -220,48 +240,41 @@ function move(garden, cell) {
     }
   }
 
+  // console.log(`Max: ${max}`);
+  if (max === 0) {
+    moreCarrots = false;
+  }
+
+  // console.log(`More carrots? ${moreCarrots}`);
+
   // console.log(`max: ${max}`);
   // console.log(`index: ${index}`);
 
-  let nextCell;
-
   switch (index) {
     case 0: //west
-      nextCell = { [garden[row][col - 1]]: [row, col - 1] };
+      curCell = { [garden[row][col - 1]]: [row, col - 1] };
       break;
     case 1: //north
-      nextCell = { [garden[row - 1][col]]: [row - 1, col] };
+      curCell = { [garden[row - 1][col]]: [row - 1, col] };
       break;
     case 2: //east
-      nextCell = { [garden[row][col + 1]]: [row, col + 1] };
+      curCell = { [garden[row][col + 1]]: [row, col + 1] };
       break;
     case 3: //south
-      nextCell = { [garden[row + 1][col]]: [row + 1, col] };
+      curCell = { [garden[row + 1][col]]: [row + 1, col] };
       break;
   }
-  // console.log(`Baby Leveret is moving to ${nextCell}`);
-  console.log(`   The "move" func has been run.`);
 
-  console.log(nextCell);
-  return nextCell;
+  // if (Number(Object.keys(curCell)[0]) === 0) {
+  //   moreCarrots = false;
+  // }
+
+  // if (moreCarrots === false) {
+  //   break;
+  // }
+
+  // console.log(`Baby Leveret is moving to ${curCell}`);
+  // console.log(`   The "move" func has been run.`);
+
+  return curCell;
 }
-
-// [
-//   [1, 1, 1],
-//   [0, 1, 1],
-//   [9, 1, 9],
-// ];
-
-// [
-//   [9, 9, 9, 9],
-//   [9, 3, 1, 0],
-//   [9, 1, 4, 2],
-//   [9, 9, 1, 0],
-// ];
-
-// [
-//   [2, 3, 1, 4, 2, 2, 3],
-//   [2, 3, 0, 4, 0, 3, 0],
-//   [1, 7, 0, 2, 1, 2, 3],
-//   [9, 3, 0, 4, 2, 0, 3],
-// ];
