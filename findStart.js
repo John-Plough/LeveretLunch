@@ -95,6 +95,20 @@ function findStart(garden) {
     }
   }
 
-  let cell = { [mostCarrots]: [indices] };
-  return cell; //this will be our starting position - ex. {4: [[1], [3]]}
+  let row = indices[0][0];
+  let col = indices[1][0];
+
+  let cell = { [garden[row][col]]: [row, col] };
+  //  cell = { carrots: [row, col] }
+
+  return cell; //this will be our starting position
 }
+
+/**
+Each cell is represented by an object:
+  The key is the number of carrots currently in that cell
+  The value is an array with two elements: the row index, the col index
+
+  cell = { carrots: [row, col] }
+  ex.    {4: [1, 3]}
+ */
